@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>乐队唱片封面 · Band Covers</title>
+<style>
+  :root {
+    --paper: #f6f3ec;
+    --ink: #1c1a17;
+    --muted: #8a8478;
+    --line: #e3ddd0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Songti SC", "Noto Serif SC", "STSong", serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 64px 24px 28px;
+  }
+  header .kicker {
+    font-size: 12px;
+    letter-spacing: 0.35em;
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-family: -apple-system, "PingFang SC", sans-serif;
+  }
+  header h1 {
+    font-size: clamp(30px, 5vw, 46px);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+  }
+  header p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.9;
+    max-width: 640px;
+    font-family: -apple-system, "PingFang SC", sans-serif;
+  }
+  header .count {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--muted);
+    font-family: -apple-system, "PingFang SC", sans-serif;
+  }
+  header .count b { color: var(--ink); font-weight: 600; }
+  .filters {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 6px 24px 30px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .filters button {
+    font-family: -apple-system, "PingFang SC", sans-serif;
+    font-size: 13px;
+    padding: 8px 18px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--muted);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .filters button.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .grid {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+  }
+  @media (min-width: 700px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+  .card { cursor: pointer; }
+  .card .cover {
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: #e9e4d8;
+  }
+  .card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .5s ease;
+  }
+  .card:hover img { transform: scale(1.04); }
+  .card .meta {
+    padding: 12px 2px 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .card .name {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .card .season {
+    font-family: -apple-system, "PingFang SC", sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    letter-spacing: 0.1em;
+  }
+  footer {
+    border-top: 1px solid var(--line);
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 60px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 2;
+    font-family: -apple-system, "PingFang SC", sans-serif;
+  }
+  /* lightbox */
+  .lb {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 18, 15, 0.94);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 20px;
+  }
+  .lb.open { display: flex; }
+  .lb figure {
+    max-width: min(88vw, 640px);
+    text-align: center;
+  }
+  .lb img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: block;
+  }
+  .lb figcaption { color: #efe9dc; padding-top: 18px; }
+  .lb .lname { font-size: 22px; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .lb .lseason {
+    font-family: -apple-system, "PingFang SC", sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: #a89f8d;
+    margin-bottom: 10px;
+  }
+  .lb .ldesc {
+    font-family: -apple-system, "PingFang SC", sans-serif;
+    font-size: 13px;
+    color: #bdb4a2;
+    line-height: 1.8;
+  }
+  .lb .idx {
+    font-family: -apple-system, sans-serif;
+    font-size: 12px;
+    color: #7d7462;
+    margin-top: 12px;
+    letter-spacing: 0.2em;
+  }
+  .lb button.nav, .lb button.close {
+    position: absolute;
+    background: none;
+    border: none;
+    color: #efe9dc;
+    font-size: 30px;
+    cursor: pointer;
+    padding: 16px;
+    line-height: 1;
+    opacity: 0.75;
+  }
+  .lb button.nav:hover, .lb button.close:hover { opacity: 1; }
+  .lb .close { top: 8px; right: 12px; }
+  .lb .prev { left: 4px; top: 50%; transform: translateY(-50%); }
+  .lb .next { right: 4px; top: 50%; transform: translateY(-50%); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">BAND COVER PROJECT</div>
+  <h1>乐队唱片封面</h1>
+  <p>从《乐队的夏天》三季里，挑出名字最有画面感的乐队——一队一张，大师摄影式的意境封面，含蓄，不直白。</p>
+  <div class="count">已收录 <b id="doneCount">0</b> 张 · 其余 11 张即将加入</div>
+</header>
+
+<nav class="filters" id="filters"></nav>
+<main class="grid" id="grid"></main>
+
+<footer>
+  乐队唱片封面计划 · 2026<br>
+  封面由 AI 按"大师摄影 · 极简 · 留白 · 有意境"的方向生成，正方形专辑比例。
+</footer>
+
+<div class="lb" id="lb">
+  <button class="close" id="lbClose" aria-label="关闭">×</button>
+  <button class="nav prev" id="lbPrev" aria-label="上一张">‹</button>
+  <figure>
+    <img id="lbImg" alt="">
+    <figcaption>
+      <div class="lname" id="lbName"></div>
+      <div class="lseason" id="lbSeason"></div>
+      <div class="ldesc" id="lbDesc"></div>
+      <div class="idx" id="lbIdx"></div>
+    </figcaption>
+  </figure>
+  <button class="nav next" id="lbNext" aria-label="下一张">›</button>
+</div>
+
+<script src="data.js"></script>
+<script>
+  const grid = document.getElementById('grid');
+  const filtersEl = document.getElementById('filters');
+  let activeSeason = '全部';
+  let visible = [];
+  let lbIndex = 0;
+
+  document.getElementById('doneCount').textContent = COVERS.length;
+
+  SEASONS.forEach(s => {
+    const b = document.createElement('button');
+    b.textContent = s;
+    if (s === '全部') b.classList.add('active');
+    b.onclick = () => {
+      activeSeason = s;
+      filtersEl.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      render();
+    };
+    filtersEl.appendChild(b);
+  });
+
+  function render() {
+    visible = COVERS.filter(c => activeSeason === '全部' || c.season === activeSeason);
+    grid.innerHTML = '';
+    visible.forEach((c, i) => {
+      const d = document.createElement('div');
+      d.className = 'card';
+      d.innerHTML =
+        '<div class="cover"><img loading="lazy" src="covers/' + c.id + '.webp" alt="' + c.name + '"></div>' +
+        '<div class="meta"><span class="name">' + c.name + '</span>' +
+        '<span class="season">' + c.season + '</span></div>';
+      d.onclick = () => openLb(i);
+      grid.appendChild(d);
+    });
+  }
+
+  const lb = document.getElementById('lb');
+  function openLb(i) {
+    lbIndex = i;
+    showLb();
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function showLb() {
+    const c = visible[lbIndex];
+    document.getElementById('lbImg').src = 'covers/' + c.id + '.webp';
+    document.getElementById('lbImg').alt = c.name;
+    document.getElementById('lbName').textContent = c.name;
+    document.getElementById('lbSeason').textContent = c.season;
+    document.getElementById('lbDesc').textContent = c.desc;
+    document.getElementById('lbIdx').textContent = (lbIndex + 1) + ' / ' + visible.length;
+  }
+  function closeLb() {
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('lbClose').onclick = closeLb;
+  document.getElementById('lbPrev').onclick = e => { e.stopPropagation(); lbIndex = (lbIndex - 1 + visible.length) % visible.length; showLb(); };
+  document.getElementById('lbNext').onclick = e => { e.stopPropagation(); lbIndex = (lbIndex + 1) % visible.length; showLb(); };
+  lb.onclick = e => { if (e.target === lb) closeLb(); };
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLb();
+    if (e.key === 'ArrowLeft') { lbIndex = (lbIndex - 1 + visible.length) % visible.length; showLb(); }
+    if (e.key === 'ArrowRight') { lbIndex = (lbIndex + 1) % visible.length; showLb(); }
+  });
+
+  render();
+</script>
+</body>
+</html>
