@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>乐队唱片封面 · Band Covers</title>
+<title>乐队唱片封面</title>
 <style>
   :root {
     --paper: #f6f3ec;
     --ink: #1c1a17;
-    --muted: #8a8478;
+    --muted: #6e685c;
     --line: #e3ddd0;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -31,7 +31,7 @@
     font-family: -apple-system, "PingFang SC", sans-serif;
   }
   header h1 {
-    font-size: clamp(30px, 5vw, 46px);
+    font-size: clamp(30px, 5vw, 44px);
     font-weight: 600;
     letter-spacing: 0.06em;
     margin-bottom: 12px;
@@ -45,7 +45,7 @@
   }
   header .count {
     margin-top: 14px;
-    font-size: 13px;
+    font-size: 14px;
     color: var(--muted);
     font-family: -apple-system, "PingFang SC", sans-serif;
   }
@@ -60,7 +60,7 @@
   }
   .filters button {
     font-family: -apple-system, "PingFang SC", sans-serif;
-    font-size: 13px;
+    font-size: 14px;
     padding: 8px 18px;
     border: 1px solid var(--line);
     background: transparent;
@@ -85,6 +85,7 @@
   @media (min-width: 700px) { .grid { grid-template-columns: repeat(3, 1fr); } }
   @media (min-width: 1024px) { .grid { grid-template-columns: repeat(4, 1fr); } }
   .card { cursor: pointer; }
+  .card:focus-visible, .filters button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
   .card .cover {
     aspect-ratio: 1;
     overflow: hidden;
@@ -106,13 +107,13 @@
     gap: 8px;
   }
   .card .name {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     letter-spacing: 0.04em;
   }
   .card .season {
     font-family: -apple-system, "PingFang SC", sans-serif;
-    font-size: 11px;
+    font-size: 12px;
     color: var(--muted);
     white-space: nowrap;
     letter-spacing: 0.1em;
@@ -150,39 +151,50 @@
     display: block;
   }
   .lb figcaption { color: #efe9dc; padding-top: 18px; }
-  .lb .lname { font-size: 22px; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .lb .lname { font-size: 18px; letter-spacing: 0.08em; margin-bottom: 6px; }
   .lb .lseason {
     font-family: -apple-system, "PingFang SC", sans-serif;
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 0.25em;
     color: #a89f8d;
     margin-bottom: 10px;
   }
   .lb .ldesc {
     font-family: -apple-system, "PingFang SC", sans-serif;
-    font-size: 13px;
+    font-size: 14px;
     color: #bdb4a2;
     line-height: 1.8;
   }
   .lb .idx {
     font-family: -apple-system, sans-serif;
     font-size: 12px;
-    color: #7d7462;
+    color: #a89f8d;
     margin-top: 12px;
     letter-spacing: 0.2em;
+  }
+  .lb .ldl {
+    display: inline-block;
+    margin-top: 16px;
+    font-family: -apple-system, "PingFang SC", sans-serif;
+    font-size: 12px;
+    color: #efe9dc;
+    border-bottom: 1px solid #a89f8d;
+    padding-bottom: 2px;
+    text-decoration: none;
   }
   .lb button.nav, .lb button.close {
     position: absolute;
     background: none;
     border: none;
     color: #efe9dc;
-    font-size: 30px;
+    font-size: 18px;
     cursor: pointer;
     padding: 16px;
     line-height: 1;
     opacity: 0.75;
   }
   .lb button.nav:hover, .lb button.close:hover { opacity: 1; }
+  .lb button:focus-visible { outline: 2px solid #efe9dc; outline-offset: 2px; }
   .lb .close { top: 8px; right: 12px; }
   .lb .prev { left: 4px; top: 50%; transform: translateY(-50%); }
   .lb .next { right: 4px; top: 50%; transform: translateY(-50%); }
@@ -193,16 +205,16 @@
 <header>
   <div class="kicker">BAND COVER PROJECT</div>
   <h1>乐队唱片封面</h1>
-  <p>从《乐队的夏天》三季里，挑出名字最有画面感的乐队——一队一张，大师摄影式的意境封面，含蓄，不直白。</p>
-  <div class="count">已收录 <b id="doneCount">0</b> 张 · 其余 11 张即将加入</div>
+  <p>从《乐队的夏天》三季里，挑出名字最有画面感的乐队，再加上 6 支大牌乐队——一队一张，大师摄影式的意境封面，含蓄，不直白。</p>
+  <div class="count">共 <b id="doneCount">0</b> 张封面，点封面看大图</div>
 </header>
 
 <nav class="filters" id="filters"></nav>
 <main class="grid" id="grid"></main>
 
 <footer>
-  乐队唱片封面计划 · 2026<br>
-  封面由 AI 按"大师摄影 · 极简 · 留白 · 有意境"的方向生成，正方形专辑比例。
+  乐队唱片封面计划，2026 年<br>
+  封面由 AI 按"大师摄影、极简、留白、有意境"的方向生成，正方形专辑比例。
 </footer>
 
 <div class="lb" id="lb">
@@ -215,6 +227,7 @@
       <div class="lseason" id="lbSeason"></div>
       <div class="ldesc" id="lbDesc"></div>
       <div class="idx" id="lbIdx"></div>
+      <a class="ldl" id="lbDownload" download>下载这张封面</a>
     </figcaption>
   </figure>
   <button class="nav next" id="lbNext" aria-label="下一张">›</button>
@@ -232,7 +245,8 @@
 
   SEASONS.forEach(s => {
     const b = document.createElement('button');
-    b.textContent = s;
+    const n = s === '全部' ? COVERS.length : COVERS.filter(c => c.season === s).length;
+    b.textContent = s + ' ' + n;
     if (s === '全部') b.classList.add('active');
     b.onclick = () => {
       activeSeason = s;
@@ -249,11 +263,15 @@
     visible.forEach((c, i) => {
       const d = document.createElement('div');
       d.className = 'card';
+      d.tabIndex = 0;
+      d.setAttribute('role', 'button');
+      d.setAttribute('aria-label', c.name + '，' + c.season + '，点开看大图');
       d.innerHTML =
         '<div class="cover"><img loading="lazy" src="covers/' + c.id + '.webp" alt="' + c.name + '"></div>' +
         '<div class="meta"><span class="name">' + c.name + '</span>' +
         '<span class="season">' + c.season + '</span></div>';
       d.onclick = () => openLb(i);
+      d.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLb(i); } };
       grid.appendChild(d);
     });
   }
@@ -273,6 +291,9 @@
     document.getElementById('lbSeason').textContent = c.season;
     document.getElementById('lbDesc').textContent = c.desc;
     document.getElementById('lbIdx').textContent = (lbIndex + 1) + ' / ' + visible.length;
+    const dl = document.getElementById('lbDownload');
+    dl.href = 'covers/' + c.id + '.webp';
+    dl.download = c.name + '-封面.webp';
   }
   function closeLb() {
     lb.classList.remove('open');
